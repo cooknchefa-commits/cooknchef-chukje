@@ -9,6 +9,8 @@ import streamlit as st
 import pandas as pd
 import requests
 import html
+from requests.adapters import HTTPAdapter
+from urllib3.util.ssl_ import create_urllib3_context
 
 st.set_page_config(page_title="식자재 물가", layout="wide", page_icon="🥬",
                    initial_sidebar_state="collapsed")
@@ -17,6 +19,24 @@ st.title("🥬 식자재 물가")
 st.caption("출처: KAMIS 농산물유통정보 (한국농수산식품유통공사) · 최근 조사일 기준")
 
 API_URL = "http://www.kamis.or.kr/service/price/xml.do"
+
+
+# KAMIS 서버는 구형 TLS(약한 cipher)만 지원 → 최신 OpenSSL(클라우드)에서 핸드셰이크 실패.
+# 보안레벨을 낮춘 SSL 컨텍스트로 호출한다.
+class _LegacyTLSAdapter(HTTPAdapter):
+    def init_poolmanager(self, *args, **kwargs):
+        ctx = create_urllib3_context(ciphers="DEFAULT@SECLEVEL=1")
+        ctx.options |= 0x4  # OP_LEGACY_SERVER_CONNECT (구형 재협상 허용)
+        kwargs["ssl_context"] = ctx
+        return super().init_poolmanager(*args, **kwargs)
+
+
+def _kamis_session():
+    s = requests.Session()
+    adapter = _LegacyTLSAdapter()
+    s.mount("https://", adapter)
+    s.mount("http://", adapter)
+    return s
 
 
 # ─────────────────────────────────────────────────────────────
@@ -30,7 +50,7 @@ def fetch_prices(cert_key: str, cert_id: str):
         "p_cert_id": cert_id,
         "p_returntype": "json",
     }
-    resp = requests.get(API_URL, params=params, timeout=25)
+    resp = _kamis_session().get(API_URL, params=params, timeout=25)
     resp.raise_for_status()
     data = resp.json()
 
