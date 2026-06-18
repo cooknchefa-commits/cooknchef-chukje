@@ -261,6 +261,13 @@ grid_html = f"""
     box-shadow: 0 1px 3px rgba(0,0,0,0.04);
     overflow: hidden;
   }}
+  @media (max-width: 820px) {{
+    .eat-grid {{ grid-template-columns: repeat(2, 1fr); }}
+    .eat-card {{ aspect-ratio: auto; min-height: 150px; }}
+  }}
+  @media (max-width: 480px) {{
+    .eat-grid {{ grid-template-columns: 1fr; }}
+  }}
   .e-name {{ font-size: 1.5rem; font-weight: 700; line-height: 1.25; }}
   .e-unit {{ font-size: 1.0rem; color: #888; margin-top: 3px; }}
   .e-price {{ font-size: 2.2rem; font-weight: 800; }}
