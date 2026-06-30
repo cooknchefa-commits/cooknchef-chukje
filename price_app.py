@@ -1,6 +1,6 @@
 """
 식자재 물가 - KAMIS "최근일자 도·소매가격정보(dailySalesList)" API 표출 (임베드 배포용 단일 앱)
-- 요청 URL: http://www.kamis.or.kr/service/price/xml.do?action=dailySalesList
+- 요청 URL: https://www.kamis.or.kr/service/price/xml.do?action=dailySalesList
 - 인증: st.secrets["KAMIS_CERT_KEY"], st.secrets["KAMIS_CERT_ID"] — Streamlit Cloud Secrets에만 저장
 - 정사각형 카드 가로 4개 그리드
 """
@@ -18,7 +18,7 @@ st.set_page_config(page_title="식자재 물가", layout="wide", page_icon="🥬
 st.title("🥬 식자재 물가")
 st.caption("출처: KAMIS 농산물유통정보 (한국농수산식품유통공사) · 최근 조사일 기준")
 
-API_URL = "http://www.kamis.or.kr/service/price/xml.do"
+API_URL = "https://www.kamis.or.kr/service/price/xml.do"
 
 
 # KAMIS 서버는 구형 TLS(약한 cipher)만 지원 → 최신 OpenSSL(클라우드)에서 핸드셰이크 실패.
